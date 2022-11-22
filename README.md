@@ -9,6 +9,9 @@ You are welcomed to use the bot or parts of the bot (api implementations,...) fo
 
 A basic discord bot, which is built in [discordgo](https://github.com/bwmarrin/discordgo), to interact with some APIs
 
+### Why a discord bot?
+The "discord bot" part is only an interface to interact with my implimentations of the APIs, since I am not especially good at front-end development :D
+
 ### Implemented APIs
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Spotify_logo_with_text.svg/1200px-Spotify_logo_with_text.svg.png" width="340" height="100">
