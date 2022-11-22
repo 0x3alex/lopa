@@ -1,4 +1,4 @@
-package etc
+package discord
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package etc
+package apis
 
 import (
 	"encoding/base64"

@@ -1,6 +1,8 @@
-package etc
+package discord
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+)
 
 type tCommands map[Command]func(*discordgo.Session, *discordgo.MessageCreate)
 

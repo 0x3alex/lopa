@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	bot "github.com/0x3alex/lopa/etc"
+	"github.com/0x3alex/lopa/discord"
 	"github.com/bwmarrin/discordgo"
 	"strings"
 )
@@ -29,13 +29,13 @@ func searchCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if len(args) < 3 {
 		sendErrorEmbed("Wrong usage!",
-			bot.GetBot().Prefix+"search <artist|album> <name>", s, m)
+			discord.GetBot().Prefix+"search <artist|album> <name>", s, m)
 		return
 	}
 	mode := strings.ToLower(args[1])
 	if mode != "artist" && mode != "album" {
 		sendErrorEmbed("Wrong usage!",
-			bot.GetBot().Prefix+"search <artist|album> <name>", s, m)
+			discord.GetBot().Prefix+"search <artist|album> <name>", s, m)
 		return
 	}
 	switch mode {
@@ -47,7 +47,7 @@ func searchCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.MessageCreate) {
-	result := bot.GetBot().Spotify.SearchArtist(artist)
+	result := discord.GetBot().Spotify.SearchArtist(artist)
 	if result.Name == "" {
 		sendErrorEmbed("No artist found!", "", s, m)
 		return
@@ -91,7 +91,7 @@ func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.Messa
 
 func searchAlbumCommand(album string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	count := 1 //the number of results, one is the best
-	result := bot.GetBot().Spotify.SearchAlbum(album, count)
+	result := discord.GetBot().Spotify.SearchAlbum(album, count)
 	if len(result) < 1 {
 		sendErrorEmbed("No album found!", "", s, m)
 		return
@@ -147,7 +147,7 @@ func pongCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func helpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	p := bot.PrintCommands()
+	p := discord.PrintCommands()
 	embedFields := make([]*discordgo.MessageEmbedField, 0)
 	for _, e := range p {
 		args := strings.Split(e, ";")
