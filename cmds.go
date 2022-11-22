@@ -85,45 +85,47 @@ func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.Messa
 	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
 	if err != nil {
 		sendErrorEmbed("Oops!",
-			"An Error occurred, while processing the Spotify Web API", s, m)
+			"An Error occurred while processing the Spotify Web API", s, m)
 	}
 }
 
 func searchAlbumCommand(album string, s *discordgo.Session, m *discordgo.MessageCreate) {
-	count := 1
+	count := 1 //the number of results, one is the best
 	result := bot.GetBot().Spotify.SearchAlbum(album, count)
 	if len(result) < 1 {
 		sendErrorEmbed("No album found!", "", s, m)
 		return
 	}
-	embed := &discordgo.MessageEmbed{
-		Color: 0x63dc3c,
-		Author: &discordgo.MessageEmbedAuthor{
-			Name:    "Spotify Lookup",
-			IconURL: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
-		},
-		Title:       result[0].AlbumName,
-		Description: "- " + result[0].AristName[:len(result[0].AristName)-2],
-		Fields: []*discordgo.MessageEmbedField{
-			{
-				Name:   "Released",
-				Value:  result[0].Release,
-				Inline: false,
+	for _, e := range result {
+		embed := &discordgo.MessageEmbed{
+			Color: 0x63dc3c,
+			Author: &discordgo.MessageEmbedAuthor{
+				Name:    "Spotify Lookup",
+				IconURL: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
 			},
-			{
-				Name:   "Tracks - " + fmt.Sprintf("%d", result[0].TotalTracks),
-				Value:  result[0].Tracks,
-				Inline: false,
+			Title:       e.AlbumName,
+			Description: "- " + e.AristName[:len(e.AristName)-2],
+			Fields: []*discordgo.MessageEmbedField{
+				{
+					Name:   "Released",
+					Value:  e.Release,
+					Inline: false,
+				},
+				{
+					Name:   "Tracks - " + fmt.Sprintf("%d", result[0].TotalTracks),
+					Value:  e.Tracks,
+					Inline: false,
+				},
 			},
-		},
-		Thumbnail: &discordgo.MessageEmbedThumbnail{
-			URL: result[0].Image,
-		},
-	}
-	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
-	if err != nil {
-		sendErrorEmbed("Oops!",
-			"An Error occurred, while processing the Spotify Web API", s, m)
+			Thumbnail: &discordgo.MessageEmbedThumbnail{
+				URL: e.Image,
+			},
+		}
+		_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
+		if err != nil {
+			sendErrorEmbed("Oops!",
+				"An Error occurred while processing the Spotify Web API", s, m)
+		}
 	}
 }
 
