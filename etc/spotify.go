@@ -28,11 +28,14 @@ func (spotify *Spotify) Auth() bool {
 	_, body, _ := req.End()
 
 	m := make(map[string]interface{})
+
 	if e := json.Unmarshal([]byte(body), &m); e != nil {
 		return false
 	}
 	val, ok := m["access_token"]
-	spotify.Token = val.(string)
+	if ok {
+		spotify.Token = val.(string)
+	}
 	return ok
 }
 

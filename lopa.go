@@ -13,13 +13,15 @@ func main() {
 		bot.GetBot().SpotifySecret)
 
 	//auth instance
-	bot.GetBot().Spotify.Auth()
+	res := bot.GetBot().Spotify.Auth()
 
 	//register the commands before the bot launch
-	bot.RegisterCommand(bot.Command{
-		Name: "Search",
-		Desc: "Search for an artist/album on spotify",
-	}, searchCommand)
+	if res {
+		bot.RegisterCommand(bot.Command{
+			Name: "Search",
+			Desc: "Search for an artist/album on spotify",
+		}, searchCommand)
+	}
 
 	bot.RegisterCommand(bot.Command{
 		Name: "Help",
