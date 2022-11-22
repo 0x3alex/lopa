@@ -52,6 +52,9 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 	if err != nil {
 		return nil
 	}
+	if result["artists"] == nil {
+		return nil
+	}
 	artists := result["artists"].(map[string]any)
 	var resultArtist Artist
 	var genres string
@@ -59,8 +62,6 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 		if key == "items" {
 			for _, v2 := range v1.([]interface{}) {
 				info := v2.(map[string]interface{})
-				fmt.Println(info)
-
 				//get genres
 				for _, v3 := range info["genres"].([]interface{}) {
 					genres += "-" + v3.(string) + "\n"
@@ -84,6 +85,39 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 	return &resultArtist
 }
 
+func (spotify *Spotify) albumTracks(id string) string {
+	req := gorequest.New()
+	url := fmt.Sprintf(
+		"https://api.spotify.com/v1/albums/%s/tracks", id)
+	req.Get(url)
+	req.Set("Authorization", "Bearer "+spotify.Token)
+	req.Set("Accept", "application/json")
+	req.Set("Content-Type", "application/json")
+	_, body, _ := req.End()
+
+	var result map[string]any
+	err := json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		return ""
+	}
+	if result["items"] == nil {
+		return ""
+	}
+	tracks := result["items"].([]interface{})
+
+	var resultTracks string
+	for _, val := range tracks {
+		name := val.(map[string]interface{})["name"].(string)
+		trackNumber := int(val.(map[string]interface{})["track_number"].(float64))
+		duration := val.(map[string]interface{})["duration_ms"].(float64)
+		duration = (duration / 1000) / 60
+		resultTracks +=
+			fmt.Sprintf("%d) %s - %.2f minutes\n", trackNumber, name, duration)
+
+	}
+	return resultTracks
+}
+
 func (spotify *Spotify) SearchAlbum(album string, count int) []Album {
 	req := gorequest.New()
 	url := fmt.Sprintf(
@@ -100,10 +134,12 @@ func (spotify *Spotify) SearchAlbum(album string, count int) []Album {
 	if err != nil {
 		return nil
 	}
+	if result["albums"] == nil {
+		return nil
+	}
 	albums := result["albums"].(map[string]any)
-
 	var albumResults []Album
-
+	var id string
 	for key, v1 := range albums {
 		//loop over items of albums
 		if key == "items" {
@@ -117,10 +153,11 @@ func (spotify *Spotify) SearchAlbum(album string, count int) []Album {
 					img = v3.(map[string]interface{})["url"].(string)
 					break
 				}
+				id = info["id"].(string)
 				album := Album{
 					AlbumName:   info["name"].(string),
 					Release:     info["release_date"].(string),
-					TotalTracks: info["total_tracks"].(string),
+					TotalTracks: int(info["total_tracks"].(float64)),
 					Image:       img,
 				}
 				//get artists
@@ -134,9 +171,11 @@ func (spotify *Spotify) SearchAlbum(album string, count int) []Album {
 					}
 
 				}
+				album.Tracks = spotify.albumTracks(id)
 				albumResults = append(albumResults, album)
 			}
 		}
 	}
+
 	return albumResults
 }

@@ -32,6 +32,7 @@ type (
 		AlbumName   string
 		AristName   string
 		Image       string
-		TotalTracks string
+		TotalTracks int
+		Tracks      string
 	}
 )

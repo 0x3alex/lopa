@@ -24,15 +24,29 @@ func sendErrorEmbed(title, desc string, s *discordgo.Session,
 	}
 }
 
-func searchArtistCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+func searchCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	args := strings.Split(m.Content, " ")
-	//send error
-	if len(args) < 2 {
+
+	if len(args) < 3 {
 		sendErrorEmbed("Wrong usage!",
-			bot.GetBot().Prefix+"SearchArtist <artist>", s, m)
+			bot.GetBot().Prefix+"search <artist|album> <name>", s, m)
 		return
 	}
-	artist := strings.Join(args[1:], " ")
+	mode := strings.ToLower(args[1])
+	if mode != "artist" && mode != "album" {
+		sendErrorEmbed("Wrong usage!",
+			bot.GetBot().Prefix+"search <artist|album> <name>", s, m)
+		return
+	}
+	switch mode {
+	case "artist":
+		searchArtistCommand(strings.Join(args[2:], " "), s, m)
+	case "album":
+		searchAlbumCommand(strings.Join(args[2:], " "), s, m)
+	}
+}
+
+func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	result := bot.GetBot().Spotify.SearchArtist(artist)
 	if result.Name == "" {
 		sendErrorEmbed("No artist found!", "", s, m)
@@ -58,7 +72,7 @@ func searchArtistCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 				Inline: true,
 			},
 		},
-		Image: &discordgo.MessageEmbedImage{
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: result.Image,
 		},
 	}
@@ -68,16 +82,7 @@ func searchArtistCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func searchAlbumCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	args := strings.Split(m.Content, " ")
-	//send error
-	if len(args) < 2 {
-		sendErrorEmbed("Wrong usage!",
-			bot.GetBot().Prefix+"SearchAlbum <artist>", s, m)
-		return
-	}
-
-	album := strings.Join(args[1:], " ")
+func searchAlbumCommand(album string, s *discordgo.Session, m *discordgo.MessageCreate) {
 	count := 1
 	result := bot.GetBot().Spotify.SearchAlbum(album, count)
 	if len(result) < 1 {
@@ -94,17 +99,17 @@ func searchAlbumCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		Description: "- " + result[0].AristName[:len(result[0].AristName)-2],
 		Fields: []*discordgo.MessageEmbedField{
 			{
-				Name:   "Total Tracks",
-				Value:  result[0].TotalTracks,
-				Inline: true,
-			},
-			{
 				Name:   "Released",
 				Value:  result[0].Release,
-				Inline: true,
+				Inline: false,
+			},
+			{
+				Name:   "Tracks - " + fmt.Sprintf("%d", result[0].TotalTracks),
+				Value:  result[0].Tracks,
+				Inline: false,
 			},
 		},
-		Image: &discordgo.MessageEmbedImage{
+		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: result[0].Image,
 		},
 	}

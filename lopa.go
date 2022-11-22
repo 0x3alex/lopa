@@ -17,14 +17,9 @@ func main() {
 
 	//register the commands before the bot launch
 	bot.RegisterCommand(bot.Command{
-		Name: "SearchArtist",
-		Desc: "Search for an artist on spotify",
-	}, searchArtistCommand)
-
-	bot.RegisterCommand(bot.Command{
-		Name: "SearchAlbum",
-		Desc: "Search for albums on spotify",
-	}, searchAlbumCommand)
+		Name: "Search",
+		Desc: "Search for an artist/album on spotify",
+	}, searchCommand)
 
 	bot.RegisterCommand(bot.Command{
 		Name: "Help",
