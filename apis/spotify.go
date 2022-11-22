@@ -70,7 +70,7 @@ func (spotify *Spotify) artistAlbums(id string) string {
 		}
 		last = name.(string)
 		release := value.(map[string]interface{})["release_date"]
-		resultAlbum += fmt.Sprintf("%s - %s\n",
+		resultAlbum += fmt.Sprintf("**%s** - _%s_\n",
 			name, release)
 	}
 
@@ -160,7 +160,7 @@ func (spotify *Spotify) albumTracks(id string) string {
 		duration := val.(map[string]interface{})["duration_ms"].(float64)
 		duration = (duration / 1000) / 60
 		resultTracks +=
-			fmt.Sprintf("%d) %s - %.2f minutes\n", trackNumber, name, duration)
+			fmt.Sprintf("%d) **%s** - _%.2f minutes_\n", trackNumber, name, duration)
 
 	}
 	return resultTracks
