@@ -36,6 +36,48 @@ func (spotify *Spotify) Auth() bool {
 	return ok
 }
 
+func (spotify *Spotify) artistAlbums(id string) string {
+	req := gorequest.New()
+	url := fmt.Sprintf(
+		"https://api.spotify.com/v1/artists/%s/albums",
+		id)
+	req.Get(url)
+	req.Set("Authorization", "Bearer "+spotify.Token)
+	req.Set("Accept", "application/json")
+	req.Set("Content-Type", "application/json")
+	_, body, _ := req.End()
+
+	var result map[string]any
+	err := json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		fmt.Println(err.Error())
+		return ""
+	}
+	if result["items"] == nil {
+		return ""
+	}
+	var resultAlbum, last string
+	items := result["items"].([]interface{})
+	for _, value := range items {
+
+		name := value.(map[string]interface{})["name"]
+		//the api seems to return some albums twice
+		if last == name {
+			continue
+		}
+		last = name.(string)
+		release := value.(map[string]interface{})["release_date"]
+		resultAlbum += fmt.Sprintf("%s - %s\n",
+			name, release)
+	}
+
+	return resultAlbum
+}
+
+func (spotify *Spotify) artistTopTracks(id string) string {
+	return ""
+}
+
 func (spotify *Spotify) SearchArtist(artist string) *Artist {
 	req := gorequest.New()
 	url := fmt.Sprintf(
@@ -57,11 +99,12 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 	}
 	artists := result["artists"].(map[string]any)
 	var resultArtist Artist
-	var genres string
+	var genres, id string
 	for key, v1 := range artists {
 		if key == "items" {
 			for _, v2 := range v1.([]interface{}) {
 				info := v2.(map[string]interface{})
+				id = info["id"].(string)
 				//get genres
 				for _, v3 := range info["genres"].([]interface{}) {
 					genres += "-" + v3.(string) + "\n"
@@ -70,7 +113,9 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 				followers := info["followers"].(map[string]interface{})["total"]
 				resultArtist.Follower = int(followers.(float64))
 				resultArtist.Genres = genres
+				//name
 				resultArtist.Name = info["name"].(string)
+				//popularity
 				resultArtist.Popularity = int(info["popularity"].(float64))
 				//get the first image url
 				for _, v3 := range info["images"].([]interface{}) {
@@ -81,7 +126,7 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 		}
 
 	}
-	fmt.Println(resultArtist)
+	resultArtist.Albums = spotify.artistAlbums(id)
 	return &resultArtist
 }
 

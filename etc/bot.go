@@ -57,7 +57,7 @@ func (bot *Bot) Start() {
 }
 
 func (bot *Bot) run(dg *discordgo.Session) {
-	fmt.Printf("%s is now running, press CTRL-C to stop", bot.Name)
+	fmt.Printf("%s is now running, press CTRL-C to stop\n", bot.Name)
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)

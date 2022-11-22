@@ -71,6 +71,11 @@ func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.Messa
 				Value:  fmt.Sprintf("%d", result.Popularity),
 				Inline: true,
 			},
+			{
+				Name:   "Albums",
+				Value:  result.Albums,
+				Inline: false,
+			},
 		},
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: result.Image,

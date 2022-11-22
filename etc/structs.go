@@ -24,6 +24,8 @@ type (
 		Follower   int
 		Genres     string
 		Image      string
+		Albums     string
+		TopTracks  string
 		Popularity int
 	}
 
