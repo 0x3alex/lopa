@@ -83,7 +83,8 @@ func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.Messa
 	}
 	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
 	if err != nil {
-		fmt.Println(err.Error())
+		sendErrorEmbed("Oops!",
+			"An Error occurred, while processing the Spotify Web API", s, m)
 	}
 }
 
@@ -120,7 +121,8 @@ func searchAlbumCommand(album string, s *discordgo.Session, m *discordgo.Message
 	}
 	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
 	if err != nil {
-		fmt.Println(err.Error())
+		sendErrorEmbed("Oops!",
+			"An Error occurred, while processing the Spotify Web API", s, m)
 	}
 }
 
