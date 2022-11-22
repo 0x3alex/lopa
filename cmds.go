@@ -52,11 +52,12 @@ func searchArtistCommand(artist string, s *discordgo.Session, m *discordgo.Messa
 		sendErrorEmbed("No artist found!", "", s, m)
 		return
 	}
+
 	embed := &discordgo.MessageEmbed{
 		Color: 0x63dc3c,
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    s.State.User.Username,
-			IconURL: s.State.User.AvatarURL(s.State.User.Avatar),
+			Name:    "Spotify Lookup",
+			IconURL: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
 		},
 		Title:       result.Name,
 		Description: fmt.Sprintf("%d", result.Follower) + " Followers",
@@ -98,8 +99,8 @@ func searchAlbumCommand(album string, s *discordgo.Session, m *discordgo.Message
 	embed := &discordgo.MessageEmbed{
 		Color: 0x63dc3c,
 		Author: &discordgo.MessageEmbedAuthor{
-			Name:    s.State.User.Username,
-			IconURL: s.State.User.AvatarURL(s.State.User.Avatar),
+			Name:    "Spotify Lookup",
+			IconURL: "https://cdn-icons-png.flaticon.com/512/174/174872.png",
 		},
 		Title:       result[0].AlbumName,
 		Description: "- " + result[0].AristName[:len(result[0].AristName)-2],
