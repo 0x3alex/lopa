@@ -23,4 +23,4 @@ The "discord bot" part is only an interface to interact with my implimentations 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Urban_Dictionary_logo.svg/1200px-Urban_Dictionary_logo.svg.png" width="340" height="100">
 - The Urban Dictionary API
 
-- The API is not docutmented by the Urbain Dictionary, since its a "secret", that those parts of the API face the public
+- The API is not docutmented by the Urban Dictionary, since its a "secret", that those parts of the API face the public
