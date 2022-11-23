@@ -18,3 +18,6 @@ The "discord bot" part is only an interface to interact with my implimentations 
 - The Spotify Web API
 
 - The usage of the [spotify web api](https://developer.spotify.com/documentation/web-api/) in this bot is very specific, since only a small part of the api is needed and processed in an very specific manner
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Urban_Dictionary_logo.svg/1200px-Urban_Dictionary_logo.svg.png" width="340" height="100">
+- The Urban Dictionary API
