@@ -37,6 +37,5 @@ func UrbanGetRandom(term string) *Urban {
 		urban.Link = info["permalink"].(string)
 		break
 	}
-	fmt.Println(urban)
 	return &urban
 }
