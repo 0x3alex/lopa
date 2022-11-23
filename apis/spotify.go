@@ -19,6 +19,26 @@ func (spotify *Spotify) encode() string {
 	return "Basic " + base64.StdEncoding.EncodeToString([]byte(raw))
 }
 
+func (spotify *Spotify) request(url, target string) (map[string]any, bool) {
+	req := gorequest.New()
+	req.Get(url)
+	req.Set("Authorization", "Bearer "+spotify.Token)
+	req.Set("Accept", "application/json")
+	req.Set("Content-Type", "application/json")
+	_, body, _ := req.End()
+
+	var result map[string]any
+	err := json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, false
+	}
+	if result[target] == nil {
+		return nil, false
+	}
+	return result, true
+}
+
 func (spotify *Spotify) Auth() bool {
 
 	req := gorequest.New()
@@ -40,26 +60,13 @@ func (spotify *Spotify) Auth() bool {
 }
 
 func (spotify *Spotify) artistAlbums(id string) string {
-	req := gorequest.New()
-	url := fmt.Sprintf(
-		"https://api.spotify.com/v1/artists/%s/albums",
-		id)
-	req.Get(url)
-	req.Set("Authorization", "Bearer "+spotify.Token)
-	req.Set("Accept", "application/json")
-	req.Set("Content-Type", "application/json")
-	_, body, _ := req.End()
-
-	var result map[string]any
-	err := json.Unmarshal([]byte(body), &result)
-	if err != nil {
-		fmt.Println(err.Error())
-		return ""
-	}
-	if result["items"] == nil {
-		return ""
-	}
 	var resultAlbum, last string
+	result, ok := spotify.request(fmt.Sprintf(
+		"https://api.spotify.com/v1/artists/%s/albums",
+		id), "items")
+	if !ok {
+		return ""
+	}
 	items := result["items"].([]interface{})
 	for _, value := range items {
 
@@ -82,22 +89,11 @@ func (spotify *Spotify) artistTopTracks(id string) string {
 }
 
 func (spotify *Spotify) SearchArtist(artist string) *Artist {
-	req := gorequest.New()
-	url := fmt.Sprintf(
+	result, ok := spotify.request(fmt.Sprintf(
 		"https://api.spotify.com/v1/search?q=%s&type=artist&limit=%d",
-		artist, 1)
-	req.Get(url)
-	req.Set("Authorization", "Bearer "+spotify.Token)
-	req.Set("Accept", "application/json")
-	req.Set("Content-Type", "application/json")
-	_, body, _ := req.End()
+		artist, 1), "artists")
 
-	var result map[string]any
-	err := json.Unmarshal([]byte(body), &result)
-	if err != nil {
-		return nil
-	}
-	if result["artists"] == nil {
+	if !ok {
 		return nil
 	}
 	artists := result["artists"].(map[string]any)
@@ -107,6 +103,7 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 		if key == "items" {
 			for _, v2 := range v1.([]interface{}) {
 				info := v2.(map[string]interface{})
+
 				id = info["id"].(string)
 				//get genres
 				for _, v3 := range info["genres"].([]interface{}) {
@@ -134,25 +131,13 @@ func (spotify *Spotify) SearchArtist(artist string) *Artist {
 }
 
 func (spotify *Spotify) albumTracks(id string) string {
-	req := gorequest.New()
-	url := fmt.Sprintf(
-		"https://api.spotify.com/v1/albums/%s/tracks", id)
-	req.Get(url)
-	req.Set("Authorization", "Bearer "+spotify.Token)
-	req.Set("Accept", "application/json")
-	req.Set("Content-Type", "application/json")
-	_, body, _ := req.End()
-
-	var result map[string]any
-	err := json.Unmarshal([]byte(body), &result)
-	if err != nil {
-		return ""
-	}
-	if result["items"] == nil {
+	result, ok := spotify.request(
+		fmt.Sprintf("https://api.spotify.com/v1/albums/%s/tracks", id),
+		"items")
+	if !ok {
 		return ""
 	}
 	tracks := result["items"].([]interface{})
-
 	var resultTracks string
 	for _, val := range tracks {
 		name := val.(map[string]interface{})["name"].(string)
@@ -167,22 +152,12 @@ func (spotify *Spotify) albumTracks(id string) string {
 }
 
 func (spotify *Spotify) SearchAlbum(album string, count int) []Album {
-	req := gorequest.New()
-	url := fmt.Sprintf(
-		"https://api.spotify.com/v1/search?q=%s&type=album&limit=%d",
-		album, count)
-	req.Get(url)
-	req.Set("Authorization", "Bearer "+spotify.Token)
-	req.Set("Accept", "application/json")
-	req.Set("Content-Type", "application/json")
-	_, body, _ := req.End()
-
-	var result map[string]any
-	err := json.Unmarshal([]byte(body), &result)
-	if err != nil {
-		return nil
-	}
-	if result["albums"] == nil {
+	result, ok := spotify.request(
+		fmt.Sprintf(
+			"https://api.spotify.com/v1/search?q=%s&type=album&limit=%d",
+			album, count),
+		"albums")
+	if !ok {
 		return nil
 	}
 	albums := result["albums"].(map[string]any)

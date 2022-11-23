@@ -15,7 +15,6 @@ func main() {
 
 	//auth instance
 	res := discord.GetBot().Spotify.Auth()
-
 	//register the commands before the bot launch
 	if res {
 		discord.RegisterCommand(discord.Command{
@@ -23,6 +22,12 @@ func main() {
 			Desc: "Search for an artist/album on spotify",
 		}, searchCommand)
 	}
+
+	discord.RegisterCommand(discord.Command{
+		Name: "Urban",
+		Desc: "Get a random word from the urban dictionary\n" +
+			"or search for one by using **" + discord.GetBot().Prefix + "Urban <term>**",
+	}, urbanCommand)
 
 	discord.RegisterCommand(discord.Command{
 		Name: "Help",

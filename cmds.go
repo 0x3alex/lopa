@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/0x3alex/lopa/apis"
 	"github.com/0x3alex/lopa/discord"
 	"github.com/bwmarrin/discordgo"
 	"strings"
@@ -21,6 +22,54 @@ func sendErrorEmbed(title, desc string, s *discordgo.Session,
 	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
 	if err != nil {
 		return
+	}
+}
+
+func urbanCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	word := ""
+	args := strings.Split(m.Content, " ")
+	if len(args) > 1 {
+		word = strings.Join(args[1:], " ")
+	}
+	result := apis.UrbanGetRandom(word)
+	votingStr := fmt.Sprintf("%d :thumbsup: and %d :thumbsdown:",
+		result.ThumbsUp, result.ThumbsDown)
+	embed := &discordgo.MessageEmbed{
+		Color: 0x3cbcdc,
+		Author: &discordgo.MessageEmbedAuthor{
+			Name: "Urban Random Word",
+			IconURL: "https://slack-files2.s3-us-west-2.amazonaws.com/" +
+				"avatars/2018-01-11/297387706245_85899a44216ce1604c93_512.jpg",
+		},
+		Title:       result.Word + " by " + result.Author,
+		Description: result.Link,
+		Fields: []*discordgo.MessageEmbedField{
+			{
+				Name:   "Definition",
+				Value:  result.Definition,
+				Inline: false,
+			},
+			{
+				Name:   "Written On",
+				Value:  result.Date,
+				Inline: true,
+			},
+			{
+				Name:   "Voting",
+				Value:  votingStr,
+				Inline: true,
+			},
+			{
+				Name:   "Example",
+				Value:  result.Example,
+				Inline: false,
+			},
+		},
+	}
+	_, err := s.ChannelMessageSendEmbed(m.ChannelID, embed)
+	if err != nil {
+		sendErrorEmbed("Oops!",
+			"An Error occurred while processing the Spotify Web API", s, m)
 	}
 }
 
