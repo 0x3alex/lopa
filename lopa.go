@@ -17,6 +17,7 @@ func main() {
 	res := discord.GetBot().Spotify.Auth()
 	//register the commands before the bot launch
 	if res {
+		//only register the spotify command when auth result is ok
 		discord.RegisterCommand(discord.Command{
 			Name: "Search",
 			Desc: "Search for an artist/album on spotify",

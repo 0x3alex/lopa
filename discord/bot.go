@@ -78,7 +78,8 @@ func (bot *Bot) messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) 
 	args := strings.Split(m.Content, " ")
 	for i, k := range Commands {
 		if strings.ToLower(i.Name) == strings.ToLower(args[0][1:]) {
-			k(s, m)
+			//extra routine to not block the thread if something takes longer
+			go k(s, m)
 		}
 	}
 

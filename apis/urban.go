@@ -7,7 +7,6 @@ import (
 )
 
 func UrbanGetRandom(term string) *Urban {
-	//https://api.urbandictionary.com/v0/random
 	req := gorequest.New()
 	url := "https://api.urbandictionary.com/v0/random"
 	if term != "" {
@@ -25,6 +24,7 @@ func UrbanGetRandom(term string) *Urban {
 	}
 	items := result["list"].([]interface{})
 	var urban Urban
+	//get only the first item, can be changed afterwards
 	for _, v := range items {
 		info := v.(map[string]any)
 		urban.Author = info["author"].(string)
